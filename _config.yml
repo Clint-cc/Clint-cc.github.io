@@ -1,0 +1,52 @@
+# Basic
+title: 克林特
+subtitle: Clint'sBlog
+description: 人只道刀马娴熟通晓诗书少年英武，怎知你闯荡江湖风餐露宿受尽千般苦
+# 头像里面的标题
+avatarTitle: Utopia-Clint
+# 头像里面的描述
+avatarDesc: Python / AI
+# 绑定的地址
+# url: "http://Clint-cc.io"
+
+# Comment
+comment:
+#评论系统用的 来比力
+
+# 社交账号
+social:
+    github: Clint-cc
+    mail: clint1801@163.com
+
+
+# 百度统计
+# 使用博客模板请去掉或者更换 id
+baidu:
+    id: f92367864cb54a55d30b04d7b21cbd97
+
+
+permalink: /:year/:month/:title/
+# Format
+highlighter: rouge
+
+textColor: #FF0000
+
+# supported colors: blue, green, purple, red, orange or slate. If you need clear, leave it empty.
+cover_color: blue
+
+# The blog button should not be removed.
+blog_button:
+    title: 博客主页
+
+# Navigation buttons in the front page.s
+nav:
+    - {title: 归档, description: archive, url: '/archive'}
+    - {title: 标签, description: tags, url: '/tags'}
+    - {title: 关于我, description: about, url: '/about'}
+
+
+# 分页，jekyll的分页
+gems: [jekyll-paginate,jekyll-sitemap]
+# 每页显示的数目
+paginate: 10
+paginate_path: "page/:num/"
