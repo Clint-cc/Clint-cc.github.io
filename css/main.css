@@ -740,8 +740,8 @@ img::-moz-selection {
     display: inline-block;
     position: relative;
     width: 100%;
-    border-color: #666;
-    color: #666;
+    border-color: #f0e833;
+    color: #f0e833;
     /*opacity: .8; */
   }
 
