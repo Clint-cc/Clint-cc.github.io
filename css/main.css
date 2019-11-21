@@ -96,6 +96,9 @@ a:hover {
 
 .whitebg {
     border: 1px solid #eee;
+    margin: 0;
+    font: inherit;
+    position: relative;
 }
 .boxx{
     width: 1000px; margin: auto; overflow: hidden
