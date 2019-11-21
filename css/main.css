@@ -96,7 +96,6 @@ a:hover {
 
 .whitebg {
     border: 1px solid #eee;
-    margin: 0;
     font: inherit;
     position: relative;
 }
@@ -127,6 +126,11 @@ a:hover {
  .taggs ul span a {
      font-size: 18px;
  }
+
+.taggs .tagt{
+  margin-bottom: 10px;
+}
+
  .taggs div .tag-title {
     font-size: 30px;
     color: #B9D3EE;
