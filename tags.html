@@ -9,10 +9,10 @@ group: navigation
 <!-- <h3>标签分类</h3> -->
 <!-- <span class="tag_box inline">{% assign tags_list = site.tags %}({% include JB/tags_list %})</span> -->
 
-<ul class="ul_tag_box inline">
+<span class="ul_tag_box inline">
   {% assign tags_list = site.tags %}
   {% include JB/tags_list %}
-</ul>
+</span>
 
 <div class = "card">
 {% for tag in site.tags %}
