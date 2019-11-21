@@ -94,11 +94,11 @@ a:hover {
 }
 
 
-.whitebg{
+.whitebg {
     border: 1px solid #eee;
 }
 .boxx{
-    width: 1170px; margin: auto; overflow: hidden
+    width: 1000px; margin: auto; overflow: hidden
 }
 .taggs { position: relative; overflow: hidden; }
 .taggs ul { margin: 0 20px 20px; overflow: hidden }
@@ -121,8 +121,13 @@ a:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
- .taggs ul span a{
+ .taggs ul span a {
      font-size: 18px;
+ }
+ .taggs div .tag-title {
+    font-size: 30px;
+    color: #B9D3EE;
+    font-family: "ff-tisa-web-pro-1",serif;
  }
 
 
