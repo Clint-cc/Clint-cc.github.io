@@ -95,7 +95,6 @@ a:hover {
 
 
 .whitebg {
-    border: 1px solid #eee;
     font: inherit;
     position: relative;
 }
@@ -107,7 +106,7 @@ a:hover {
 .taggs ul span {
     border-radius: 4px;
     box-shadow: 0 5px 5px #9FB6CD;
-    border-left: 6px solid #1874CD;
+    border-left: 6px solid #f0e833;
     display: block;
     float: left;
     width: 10%;
@@ -122,6 +121,7 @@ a:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 18px;
 }
  .taggs ul span a {
      font-size: 18px;
