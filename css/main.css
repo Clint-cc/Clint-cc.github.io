@@ -93,6 +93,21 @@ a:hover {
   -webkit-transition: .5s;
 }
 
+.tag_box{
+                background-color:#B9D3EE;
+                width:150px;
+                font-size: 20px;
+                margin-right: 10px;
+                text-indent: 4px;
+                border-radius: 4px;
+                padding: 6px 15px;
+                margin-bottom: 20px;
+                margin-top: 5px;
+                box-shadow: 0 5px 5px #9FB6CD;
+                border-left: 6px solid #1874CD;
+                position: relative;
+            }
+
 h1,
 h2,
 h3,
