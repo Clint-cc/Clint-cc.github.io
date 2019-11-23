@@ -102,7 +102,7 @@ a:hover {
     margin: auto; overflow: hidden
 }
 .taggs { position: relative; overflow: hidden; }
-.taggs ul { margin: 0 20px 20px; overflow: hidden }
+.taggs ul { margin: 0 20px 20px 0; overflow: hidden }
 .taggs ul span {
     border-radius: 4px;
     box-shadow: 0 5px 5px #9FB6CD;
