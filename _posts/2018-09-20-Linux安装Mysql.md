@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "linux上安装mysql"
-date: 2019-04-11
+title: "linux上安装mysql常见的一些问题"
+date: 2018-09-20
 description: "在linux(centos6.10)安装mysql5.6"
 tag: 数据库
 ---   

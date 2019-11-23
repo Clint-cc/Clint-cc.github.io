@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "搭建个人博客"
-date: 2019-03-25
+date: 2018-10-15
 description: "基于github Pages+Jekyll搭建自己的博客"
-tag: 博客由来
+tag: 博客
 ---   
 
 ## 前言
