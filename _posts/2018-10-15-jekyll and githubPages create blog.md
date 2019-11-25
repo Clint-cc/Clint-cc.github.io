@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "搭建个人博客"
+title: "Jekyll and gitPages搭建个人博客"
 date: 2018-10-15
 description: "基于github Pages+Jekyll搭建自己的博客"
-tag: 博客
+tag: Git
 ---   
 
 ## 前言
