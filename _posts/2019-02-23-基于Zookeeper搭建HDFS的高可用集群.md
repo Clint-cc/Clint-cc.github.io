@@ -1,21 +1,23 @@
 ---
 layout: post
-title: "2019-02-23-基于Zookeeper搭建HDFS的高可用集群"
+title: "基于Zookeeper搭建HDFS的高可用集群"
 date: 2019-02-23
 description: ""
 tag: 大数据
 ---  
+## 文章目录
 <nav>
 <a href="#一高可用简介">一、高可用简介</a><br/>
-<a href="#二集群规划">二、HDFS-HA工作原理</a><br/>
-<a href="#三前置条件">三、高可用整体架构</a><br/>
-<a href="#四集群配置">四、环境准备</a><br/>
-<a href="#五启动集群">五、HA集群规划</a><br/>
-<a href="#六查看集群">六、配置Zookeeper集群</a><br/>
-<a href="#七集群的二次启动">八、启动ha集群</a><br/>
-<a href="#七集群的二次启动">九、查看集群</a><br/>
+<a href="#二HDFS-HA工作原理">二、HDFS-HA工作原理</a><br/>
+<a href="#三高可用整体架构">三、高可用整体架构</a><br/>
+<a href="#四环境准备">四、环境准备</a><br/>
+<a href="#五HA集群规划">五、HA集群规划</a><br/>
+<a href="#六配置Zookeeper集群">六、配置Zookeeper集群</a><br/>
+<a href="#七配置HDFS-HA集群和YARN-HA集群">七、配置HDFS-HA集群和YARN-HA集群</a><br/>
+<a href="#八启动ha集群">八、启动ha集群</a><br/>
+<a href="#九查看集群">九、查看集群</a><br/>
 </nav>
-
+### 七、配置HDFS-HA集群和YARN-HA集群
 ### 一、高可用简介
 + HA（High Available），即高可用,其实就是7*24小时不中断服务。
 + 实现高可用最关键的策略是消除单点故障。HA严格来说应该分成各个组件的HA机制：HDFS高可用和YARN高可用。
@@ -30,7 +32,7 @@ tag: 大数据
 ### 三、高可用整体架构
 ##### HDFS高可用架构如下：
 <div align="center"> <img  src="../../pictures/HDFS-HA-Architecture-Edureka.png"/> </div>
-> *图片引用自：https://www.edureka.co/blog/how-to-set-up-hadoop-cluster-with-hdfs-high-availability/*
+图片引用自：https://www.edureka.co/blog/how-to-set-up-hadoop-cluster-with-hdfs-high-availability/
 
 ##### HDFS高可用架构主要由以下组件所构成：
 + **ActiveNameNode和StandbyNameNode**：两台 NameNode 形成互备，一台处于 Active 状态，为主 NameNode，另外一台处于 Standby 状态，为备 NameNode，只有主 NameNode 才能对外提供读写服务。
@@ -47,7 +49,7 @@ tag: 大数据
 ##### 参考我之前的博客:[Hadoop完全分布式运行模式](https://clint-cc.github.io/2019/02/Hadoop%E9%9B%86%E7%BE%A4%E5%AE%8C%E5%85%A8%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/)
 
 ### 五、HDFS-HA集群规划
-<center>hadoop101|<center>hadoop102|<center>hadoop103
+<center>hadoop101</center>|<center>hadoop102</center>|<center>hadoop103</center>
 :---:|:---:|:----:
 主NameNode|备NameNode|
 JournalNode|JournalNode|JournalNode
@@ -320,15 +322,20 @@ server.3=hadoop103:2888:3888
 ### 九、查看集群
 #### 9-1、查看进程
 成功启动后，每台服务器上的进程如下：
-图片
+![clint](/images/posts/hadoop/h1jps.jpg)
+![clint](/images/posts/hadoop/h2jps.jpg)
+![clint](/images/posts/hadoop/h3jps.jpg)
 
 #### 9-2、查看Web UI
 HDFS 和 YARN 的端口号分别为 50070 和 8088，界面如下：
 hadoop101上的NameNode处于可用状态：
-图片
+![clint](/images/posts/hadoop/ha1.jpg)
+
 hadoop102上的NameNode处于备用状态：
-图片
+
+![clint](/images/posts/hadoop/ha2.jpg)
+
+
 hadoop102上的ResourceManager处于可用状态：
-图片
+
 hadoop101上的ResourceManager处于备用状态：
-图片
