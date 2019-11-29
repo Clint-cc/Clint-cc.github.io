@@ -7,34 +7,44 @@ tag: 大数据
 ---  
 ## 文章目录
 <nav>
-<a href="#一高可用简介">一、高可用简介</a><br/>
-<a href="#二HDFS-HA工作原理">二、HDFS-HA工作原理</a><br/>
-<a href="#三高可用整体架构">三、高可用整体架构</a><br/>
-<a href="#四环境准备">四、环境准备</a><br/>
-<a href="#五HA集群规划">五、HA集群规划</a><br/>
-<a href="#六配置Zookeeper集群">六、配置Zookeeper集群</a><br/>
-<a href="#七配置HDFS-HA集群和YARN-HA集群">七、配置HDFS-HA集群和YARN-HA集群</a><br/>
-<a href="#八启动ha集群">八、启动ha集群</a><br/>
-<a href="#九查看集群">九、查看集群</a><br/>
+    <a href="#一高可用简介">一、高可用简介</a><br/>
+    <a href="#二HA工作原理">二、HDFS工作原理</a><br/>
+    <a href="#三高可用整体架构">三、高可用整体架构</a><br/>
+    <a href="#四环境准备">四、环境准备</a><br/>
+    <a href="#五HA集群规划">五、HA集群规划</a><br/>
+    <a href="#六配置Zookeeper集群">六、配置Zookeeper集群</a><br/>
+    <a href="#七配置HDFS-HA集群和YARN-HA集群">七、配置HDFS-HA集群和YARN-HA集群</a><br/>
+    <a href="#八启动ha集群">八、启动ha集群</a><br/>
+    <a href="#九查看集群">九、查看集群</a><br/>
 </nav>
-### 七、配置HDFS-HA集群和YARN-HA集群
-### 一、高可用简介
-+ HA（High Available），即高可用,其实就是7*24小时不中断服务。
-+ 实现高可用最关键的策略是消除单点故障。HA严格来说应该分成各个组件的HA机制：HDFS高可用和YARN高可用。
-+ Hadoop2.0之前，在HDFS集群中NameNode存在单点故障（SPOF）。
-+ NameNode主要在以下两个方面影响 HDFS 集群:
-    + NameNode 机器发生意外，如宕机，集群将无法使用，直到管理员重启
-    + NameNode 机器需要升级，包括软件、硬件升级，此时集群也将无法使用
 
-### 二、HDFS-HA工作原理
+### 一、高可用简介
++ HA（High Available），即高可用,其实就是7*24小时不中断服务；
++ 实现高可用最关键的策略是消除单点故障。HA严格来说应该分成各个组件的HA机制：HDFS高可用和YARN高可用；
++ Hadoop2.0之前，在HDFS集群中NameNode存在单点故障（SPOF）；
++ NameNode主要在以下两个方面影响 HDFS 集群:
+    + NameNode 机器发生意外，如宕机，集群将无法使用，直到管理员重启；
+    + NameNode 机器需要升级，包括软件、硬件升级，此时集群也将无法使用；
+
+### 二、HA工作原理
+##### 2-1 HDFS-HA
 简单来说，HA主要是通过NameNode消除单点故障，HDFS-HA功能通过配置Active/Standby两个NameNodes实现在集群中对NameNode的热备来解决上述问题。如果出现故障，如机器崩溃或机器需要升级维护，这时可通过此种方式将NameNode很快的切换到另外一台机器。
 
-### 三、高可用整体架构
-##### HDFS高可用架构如下：
-<div align="center"> <img  src="../../pictures/HDFS-HA-Architecture-Edureka.png"/> </div>
-图片引用自：https://www.edureka.co/blog/how-to-set-up-hadoop-cluster-with-hdfs-high-availability/
+##### 2-2 基于QJM的共享存储系统的数据同步机制
+目前Hadoop支持使用Quorum Journal Manager(QJM)或Network File System(NFS)作为共享的存储系统，这里以QJM集群为例进行说明：Active NameNode首先把EditLog提交到JournalNode集群，然后Standby NameNode再从JournalNode集群定时同步EditLog，当Active NameNode宕机后，Standby NameNode在确认元数据完全同步之后就可以对外提供服务。
 
-##### HDFS高可用架构主要由以下组件所构成：
+需要说明的是向JournalNode集群写入EditLog是遵循 “过半写入则成功” 的策略，所以你至少要有3个JournalNode节点，当然你也可以继续增加节点数量，但是应该保证节点总数是奇数。同时如果有 2N+1 台 JournalNode，那么根据过半写的原则，最多可以容忍有N台JournalNode节点挂掉。
+
+##### 2-3 YARN-HA
+YARN ResourceManager的高可用与HDFS NameNode的高可用类似，但是ResourceManager不像NameNode ，没有那么多的元数据信息需要维护，所以它的状态信息可以直接写到Zookeeper上，并依赖Zookeeper来进行主备选举。
+
+### 三、高可用整体架构
+##### 3-1、HDFS高可用架构如下：
+![clint](/images/posts/hadoop/ha.jpg)
+
+图片引用自：[https://www.edureka.co/blog/how-to-set-up-hadoop-cluster-with-hdfs-high-availability/](https://www.edureka.co/blog/how-to-set-up-hadoop-cluster-with-hdfs-high-availability/)
+
+##### 3-2、HDFS高可用架构主要由以下组件所构成：
 + **ActiveNameNode和StandbyNameNode**：两台 NameNode 形成互备，一台处于 Active 状态，为主 NameNode，另外一台处于 Standby 状态，为备 NameNode，只有主 NameNode 才能对外提供读写服务。
 
 + **主备切换控制器 ZKFailoverController**：ZKFailoverController 作为独立的进程运行，对 NameNode 的主备切换进行总体控制。ZKFailoverController 能及时检测到 NameNode 的健康状况，在主 NameNode 故障时借助 Zookeeper 实现自动的主备选举和切换，当然 NameNode 目前也支持不依赖于 Zookeeper 的手动主备切换。
@@ -46,10 +56,11 @@ tag: 大数据
 + **DataNode 节点**：除了通过共享存储系统共享 HDFS 的元数据信息之外，主 NameNode 和备 NameNode 还需要共享 HDFS 的数据块和 DataNode 之间的映射关系。DataNode 会同时向主 NameNode 和备 NameNode 上报数据块的位置信息。
 
 ### 四、环境准备
-##### 参考我之前的博客:[Hadoop完全分布式运行模式](https://clint-cc.github.io/2019/02/Hadoop%E9%9B%86%E7%BE%A4%E5%AE%8C%E5%85%A8%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/)
+##### 参考我之前的博客
+> **[Hadoop完全分布式运行模式](https://clint-cc.github.io/2019/02/Hadoop%E9%9B%86%E7%BE%A4%E5%AE%8C%E5%85%A8%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/)**
 
-### 五、HDFS-HA集群规划
-<center>hadoop101</center>|<center>hadoop102</center>|<center>hadoop103</center>
+### 五、HA集群规划
+hadoop101|hadoop102|hadoop103
 :---:|:---:|:----:
 主NameNode|备NameNode|
 JournalNode|JournalNode|JournalNode
@@ -59,21 +70,20 @@ NodeManager|NodeManager|NodeManager
 Zookeeper|Zookeeper|Zookeeper
 
 ### 六、配置Zookeeper集群
-
-#### 6-1、在hadoop101、hadoop102、hadoop103上部署Zookeeper
-下载并解压Zookeepr，官网下载地址：[https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/](https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/)
+##### 6-1、在hadoop101、hadoop102、hadoop103上部署Zookeeper
++ 下载并解压Zookeepr，官网下载地址：[https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/](https://archive.apache.org/dist/zookeeper/zookeeper-3.4.14/)
 ```shell
 [root@hadoop101 software]# tar -zxvf zookeeper-3.4.14.tar.gz -C /opt/module/
 ```
 
-#### 6-2、在安装目录/opt/module/zookeeper-3.4.14中创建zkData文件夹
+##### 6-2、在安装目录/opt/module/zookeeper-3.4.14中创建zkData文件夹
++ 在zkData下创建myid文件，在文件添加与server对应的编号：如 1
++ 用xsync脚本分发到每一个服务器上，分别修改hadoop102、hadoop103上的myid为2,3
 ```shell
 [root@hadoop101 zookeeper-3.4.14]# mkdir zkData
 ```
-+ 在zkData下创建myid文件，在文件添加与server对应的编号：如 1
-+ 用xsync脚本分发到每一个服务器上，分别修改hadoop102、hadoop103上的myid为2,3
 
-#### 6-3、配置zoo.cfg文件
+##### 6-3、配置zoo.cfg文件
 ```shell
 [root@hadoop101 conf]# mv zoo_sample.cfg zoo.cfg
 # 增加如下配置：
@@ -89,8 +99,8 @@ server.3=hadoop103:2888:3888
     + D是万一集群中的Leader服务器挂了，需要一个端口来重新进行选举，选出一个新的Leader，而这个端口就是用来执行选举时服务器相互通信的端口。
 + 集群模式下配置一个文件myid，这个文件在dataDir目录下，这个文件里面有一个数据 就是A的值，Zookeeper启动时读取此文件，拿到里面的数据与zoo.cfg里面的配置信息比较从而判断到底是哪个server。
 
-#### 6-4、分别启动zookeeper,查看状态
-分别在三台机器上执行如下命令：
+##### 6-4、分别启动zookeeper,查看状态
+分别在三台机器上执行如下命令启动zk集群：
 ```shell
 [root@hadoop101 zookeeper-3.4.14]# bin/zkServer.sh start
 ```
@@ -101,13 +111,12 @@ server.3=hadoop103:2888:3888
 图片
 
 ### 七、配置HDFS-HA集群和YARN-HA集群
-
-#### 7-1、在opt目录下创建ha文件夹，将之前的hadoop-2.7.7拷贝到此文件夹（先不分发，等配置完一起分发）
+##### 7-1、在opt目录下创建ha文件夹，将hadoop-2.7.7全部拷贝到此文件夹（配置完一起分发）
 ```shell
 [root@hadoop102 opt]# cp -r hadoop-2.7.7/ /opt/ha/
 ```
 
-#### 7-2、配置core-site.xml
+##### 7-2、配置core-site.xml
 ```xml
 <configuration>
     <!-- 把两个 NameNode）的地址组装成一个集群 mycluster -->
@@ -131,7 +140,7 @@ server.3=hadoop103:2888:3888
 </configuration>
 ```
 
-#### 7-3、配置hdfs-site.xml
+##### 7-3、配置hdfs-site.xml
 ```xml
 <configuration>
     <!-- 完全分布式集群名称 -->
@@ -214,7 +223,7 @@ server.3=hadoop103:2888:3888
 
 </configuration>
 ```
-#### 7-4、配置yarn-site.xml
+##### 7-4、配置yarn-site.xml
 ```xml
 <configuration>
     <!--配置NodeManager上运行的附属服务。需要配置成mapreduce_shuffle后才可以在Yarn上运行MapReduce程序 -->
@@ -273,69 +282,76 @@ server.3=hadoop103:2888:3888
 </configuration>
 ```
 
-#### 7-5、将配置好的配置文件分发到其他机器上
-进入/opt/ha/hadoop-2.7.7/etc目录下，将其hadoop文件目录下的配置文件全部分发到其他机器
+##### 7-5、将配置好的配置文件分发到其他机器上
++ 进入/opt/ha/hadoop-2.7.7/etc目录下，将其hadoop文件目录下的配置文件全部分发到其他机器。
 ```shell
 [root@hadoop102 etc]# xsync hadoop
 ```
+
 ### 八、启动ha集群
-#### 8-1、每个节点上启动zookeeper（如果之前启动没关就不再重新启动）
+##### 8-1、每个节点上启动zookeeper（如果之前启动没关就不再重新启动）
 ```shell
 [root@hadoop101 zookeeper-3.4.14]# bin/zkServer.sh start
 [root@hadoop102 zookeeper-3.4.14]# bin/zkServer.sh start
 [root@hadoop103 zookeeper-3.4.14]# bin/zkServer.sh start
 ```
-#### 8-2、在每台机器上启动journalnode节点（一定是先启动这一步，因为元数据不在本地存的）
-分别到三台服务器的/opt/ha/hadoop-2.7.7目录下启动journalnode进程
++ 查看状态：
+
+```shell
+[root@hadoop101 zookeeper-3.4.14]# bin/zkServer.sh status
+[root@hadoop102 zookeeper-3.4.14]# bin/zkServer.sh status
+[root@hadoop103 zookeeper-3.4.14]# bin/zkServer.sh status
+```
+![clint](/images/posts/hadoop/zkjq.jpg)
+
+##### 8-2、在每台机器上启动journalnode节点（一定是先启动这一步，因为元数据不在本地存的）
++ 分别到三台服务器的/opt/ha/hadoop-2.7.7目录下启动journalnode进程；
+
 ```shell
 [root@hadoop101 hadoop-2.7.7]# sbin/hadoop-daemon.sh start journalnode
 [root@hadoop102 hadoop-2.7.7]# sbin/hadoop-daemon.sh start journalnode
 [root@hadoop103 hadoop-2.7.7]# sbin/hadoop-daemon.sh start journalnode
-
 ```
 
-#### 8-3、在hadoop101上初始化NameNode
+##### 8-3、在hadoop101上初始化NameNode
 ```shell
 [root@hadoop101 hadoop-2.7.7]# bin/hdfs namenode -format
 ```
 
-#### 8-4、在hadoop102上同步nn1的元数据
+##### 8-4、在hadoop102上同步nn1的元数据
 ```shell
 [root@hadoop102 hadoop-2.7.7]# bin/hdfs namenode -bootstrapStandby
 ```
 
-#### 8-5、在任意一台NameNode上初始化ZooKeeper中的HA状态
+##### 8-5、在任意一台NameNode上初始化ZooKeeper中的HA状态
 ```shell
 [root@hadoop101 hadoop-2.7.7]# bin/hdfs zkfc -formatZK
 ```
 
-#### 8-6、在hadoop101启动HDFS
+##### 8-6、在hadoop101启动HDFS
 ```shell
 [root@hadoop101 hadoop-2.7.7]# sbin/start-dfs.sh
 ```
 
-#### 8-7、在hadoop102上启动YARN
+##### 8-7、在hadoop102上启动YARN
 ```shell
 [root@hadoop102 hadoop-2.7.7]# sbin/start-yarn.sh
 ```
 
 ### 九、查看集群
-#### 9-1、查看进程
-成功启动后，每台服务器上的进程如下：
+##### 9-1、查看进程
++ 成功启动后，每台服务器上的进程如下：
 ![clint](/images/posts/hadoop/h1jps.jpg)
 ![clint](/images/posts/hadoop/h2jps.jpg)
 ![clint](/images/posts/hadoop/h3jps.jpg)
 
-#### 9-2、查看Web UI
-HDFS 和 YARN 的端口号分别为 50070 和 8088，界面如下：
-hadoop101上的NameNode处于可用状态：
+##### 9-2、查看Web UI
++ HDFS 和 YARN 的端口号分别为 50070 和 8088，界面如下：
+    + hadoop101上的NameNode处于可用状态：  
 ![clint](/images/posts/hadoop/ha1.jpg)
-
-hadoop102上的NameNode处于备用状态：
-
+    + hadoop102上的NameNode处于备用状态：
 ![clint](/images/posts/hadoop/ha2.jpg)
-
-
-hadoop102上的ResourceManager处于可用状态：
-
-hadoop101上的ResourceManager处于备用状态：
+    + hadoop102上的ResourceManager处于可用状态：
+![clint](/images/posts/hadoop/yarn-ha1.jpg)
+    + 当我把hadoop102的RM kill掉的时候hadoop101上的ResourceManager处于可用状态：
+![clint](/images/posts/hadoop/yarn-ha2.png)
