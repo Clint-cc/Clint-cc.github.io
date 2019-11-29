@@ -8,7 +8,7 @@ tag: 大数据
 ## 文章目录
 <nav>
     <a href="#一高可用简介">一、高可用简介</a><br/>
-    <a href="#二HA工作原理">二、HDFS工作原理</a><br/>
+    <a href="#二HA工作原理">二、HA工作原理</a><br/>
     <a href="#三高可用整体架构">三、高可用整体架构</a><br/>
     <a href="#四环境准备">四、环境准备</a><br/>
     <a href="#五HA集群规划">五、HA集群规划</a><br/>
@@ -60,14 +60,14 @@ YARN ResourceManager的高可用与HDFS NameNode的高可用类似，但是Resou
 > **[Hadoop完全分布式运行模式](https://clint-cc.github.io/2019/02/Hadoop%E9%9B%86%E7%BE%A4%E5%AE%8C%E5%85%A8%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/)**
 
 ### 五、HA集群规划
-hadoop101|hadoop102|hadoop103
-:---:|:---:|:----:
-主NameNode|备NameNode|
-JournalNode|JournalNode|JournalNode
-DataNode|DataNode|DataNode
-备ResouceManager|主ResouceManager|
-NodeManager|NodeManager|NodeManager
-Zookeeper|Zookeeper|Zookeeper
+ hadoop101|hadoop102|hadoop103
+ -|:-:|-
+ 主NameNode|备NameNode|
+ JournalNode|JournalNode|JournalNode
+ DataNode|DataNode|DataNode
+ 备ResouceManager|主ResouceManager|
+ NodeManager|NodeManager|NodeManager
+ Zookeeper|Zookeeper|Zookeeper
 
 ### 六、配置Zookeeper集群
 ##### 6-1、在hadoop101、hadoop102、hadoop103上部署Zookeeper
@@ -108,7 +108,6 @@ server.3=hadoop103:2888:3888
 ```shell
 [root@hadoop101 zookeeper-3.4.14]# bin/zkServer.sh status
 ```
-图片
 
 ### 七、配置HDFS-HA集群和YARN-HA集群
 ##### 7-1、在opt目录下创建ha文件夹，将hadoop-2.7.7全部拷贝到此文件夹（配置完一起分发）
