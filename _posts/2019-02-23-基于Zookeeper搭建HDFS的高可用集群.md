@@ -60,14 +60,14 @@ YARN ResourceManager的高可用与HDFS NameNode的高可用类似，但是Resou
 > **[Hadoop完全分布式运行模式](https://clint-cc.github.io/2019/02/Hadoop%E9%9B%86%E7%BE%A4%E5%AE%8C%E5%85%A8%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F/)**
 
 ### 五、HA集群规划
-hadoop101|hadoop102|hadoop103
--|:-:|-
-主NameNode|备NameNode|
-JournalNode|JournalNode|JournalNode
-DataNode|DataNode|DataNode
-备ResouceManager|主ResouceManager|
-NodeManager|NodeManager|NodeManager
-Zookeeper|Zookeeper|Zookeeper
+|hadoop101|hadoop102|hadoop103|
+|-----|:------:|-------|
+主NameNode|备NameNode| |
+|JournalNode|JournalNode|JournalNode|
+|DataNode|DataNode|DataNode|
+|备ResouceManager|主ResouceManager| |
+|NodeManager|NodeManager|NodeManager|
+|Zookeeper|Zookeeper|Zookeeper|
 
 ### 六、配置Zookeeper集群
 ##### 6-1、在hadoop101、hadoop102、hadoop103上部署Zookeeper
