@@ -62,10 +62,10 @@ YARN ResourceManager的高可用与HDFS NameNode的高可用类似，但是Resou
 ### 五、HA集群规划
 |hadoop101|hadoop102|hadoop103|
 |-----|:------:|-------|
-主NameNode|备NameNode| |
+主NameNode|备NameNode|
 |JournalNode|JournalNode|JournalNode|
 |DataNode|DataNode|DataNode|
-|备ResouceManager|主ResouceManager| |
+|备ResouceManager|主ResouceManager|
 |NodeManager|NodeManager|NodeManager|
 |Zookeeper|Zookeeper|Zookeeper|
 
